@@ -10,15 +10,15 @@
     <ContentPage.Resources>
     </ContentPage.Resources>
 
-    <Grid x:Name="MainGrid" RowDefinitions="220*,1980*" ColumnDefinitions="1080*" Padding="0">
+    <Grid x:Name="MainGrid" RowDefinitions="220*,723*,534*,723*" ColumnDefinitions="86*,908*,86*" Padding="0">
         <!-- Row 0 -->
         <!-- Scoreboard -->
-        <!-- Cols: Border,Top Score,Border,Current Score,Border,Time Left,Border,Clock,Border -->
-        <Grid x:Name="ScoreboardGrid" RowDefinitions="33*,73*,79*,13*,22*" ColumnDefinitions="21*,216*,38*,216*,38*,144*,8*,152*,15*" Padding="0"
+        <!-- Cols: Border,Score,Border,Top Score,Border,HintandHelp,Border,Clock,Border -->
+        <Grid x:Name="ScoreboardGrid" RowDefinitions="33*,73*,79*,13*,22*" ColumnDefinitions="21*,288*,38*,288*,29*,221*,28*,152*,15*" Padding="0"
             Grid.Row="0"
             Grid.Column="0" 
             Grid.RowSpan="1"
-            Grid.ColumnSpan="1">
+            Grid.ColumnSpan="3">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnTouchScoreboard"/>
             </Grid.GestureRecognizers>
@@ -31,25 +31,35 @@
                 Aspect="Fill" HorizontalOptions="Fill" VerticalOptions="Fill"
                 x:Name="ScoreBoard">
             </Image>
-            <!-- Top Score -->
-            <GraphicsView x:Name="TopScoreGraphicsView"
+            <!-- Hint button -->
+            <Image
+                Grid.Row="0"
+                Grid.Column="5"
+                Grid.RowSpan="5"
+                Grid.ColumnSpan="1"
+                Source="scbd_button_hint_grey.png"
+                Aspect="Fill" HorizontalOptions="Fill" VerticalOptions="Fill"
+                x:Name="ScoreBoardButton_Hint">
+            </Image>
+            <!-- Score -->
+            <GraphicsView x:Name="ScoreGraphicsView"
                 Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="1">
                 <GraphicsView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnTouchTopScore"/>
+                    <TapGestureRecognizer Tapped="OnTouchScoreboard"/>
                 </GraphicsView.GestureRecognizers>
             </GraphicsView>
-            <!-- Current Score -->
-            <GraphicsView x:Name="ScoreGraphicsView"
+            <!-- Top Score -->
+            <GraphicsView x:Name="TopScoreGraphicsView"
                 Grid.Row="2" Grid.Column="3" Grid.RowSpan="2" Grid.ColumnSpan="1">
                 <GraphicsView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnTouchCurrentScore"/>
+                    <TapGestureRecognizer Tapped="OnTouchScoreboard"/>
                 </GraphicsView.GestureRecognizers>
             </GraphicsView>
-            <!-- Time -->
-            <GraphicsView x:Name="TimeGraphicsView"
-                Grid.Row="2" Grid.Column="5" Grid.RowSpan="2" Grid.ColumnSpan="1">
+            <!-- Hint Button -->
+            <GraphicsView x:Name="ButtonsGraphicsView"
+                Grid.Row="0" Grid.Column="5" Grid.RowSpan="5" Grid.ColumnSpan="1">
                 <GraphicsView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnTouchClock"/>
+                    <TapGestureRecognizer Tapped="OnTouchButtonHint"/>
                 </GraphicsView.GestureRecognizers>
             </GraphicsView>
             <!-- Clock -->
@@ -61,15 +71,38 @@
             </GraphicsView>
         </Grid>
 
-        <!-- Row 1 -->
-        
+        <!-- Rows 1 to 3 -->
+
         <!-- Main game view -->
         <local:TouchableGraphicsView x:Name="WordyBlobGraphicsView"
-            Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="1">
+            Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3">
             <local:TouchableGraphicsView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnTappedMainGame"/>
             </local:TouchableGraphicsView.GestureRecognizers>
         </local:TouchableGraphicsView>
+
+        <!-- Next Level and Game Over panels -->
+        <Grid x:Name="NextLevelGrid" RowDefinitions="52*,138*,40*,138*,166*" ColumnDefinitions="320*,327*,217*,44*" Padding="0"
+            IsVisible="False"
+            Grid.Row="2"
+            Grid.Column="1" 
+            Grid.RowSpan="1"
+            Grid.ColumnSpan="1">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnTouchNextLevelGrid"/>
+            </Grid.GestureRecognizers>
+            <Image
+                Grid.Row="0"
+                Grid.Column="0" 
+                Grid.RowSpan="5"
+                Grid.ColumnSpan="4"
+                Source="game_over.png"
+                Aspect="Fill" HorizontalOptions="Fill" VerticalOptions="Fill"
+                x:Name="NextLevelImage">
+            </Image>
+            <!-- Total Score TODO -->
+            <!-- Next Level TODO -->
+        </Grid>
     </Grid>
 
 </ContentPage>

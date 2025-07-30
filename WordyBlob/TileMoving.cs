@@ -7,30 +7,59 @@ using System.Threading.Tasks;
 
 namespace WordyBlob
 {
+    public enum EGridCellType
+    {
+        Invalid,
+        SameAsBefore,
+        Plain,
+        BonusX2,
+        BonusX3
+    }
     public struct GridCell
     {
         public char _char;
         public bool _bOnEdgeOfBlob;
-        public int _iInWord;
+        public int _iInWordOfLen;
+        public EGridCellType _eType = EGridCellType.Plain;
 
-        public GridCell(char c, bool bOnEdgeOfBlob)
+        public GridCell(char c, bool bOnEdgeOfBlob, EGridCellType eType)
         {
             _char = c;
             _bOnEdgeOfBlob = bOnEdgeOfBlob;
-            _iInWord = 0;
+            _eType = eType;
+            _iInWordOfLen = 0;
         }
 
-        public void RemoveTile()
+        public void RemoveTile(EGridCellType eType)
         {
             _char = (char)0;
             _bOnEdgeOfBlob = false;
-            _iInWord = 0;
+            _iInWordOfLen = 0;
+            if(eType != EGridCellType.SameAsBefore)
+                _eType = eType;
+        }
+
+        public int ScoreMultiple
+        {
+            get
+            {
+                switch(_eType)
+                {
+                    case EGridCellType.BonusX2:
+                        return 2;
+                    case EGridCellType.BonusX3:
+                        return 3;
+                    default:
+                        return 1;
+                }
+            }
         }
     }
 
     public class TileMoving
     {
         Vect2 _Pos, _Vel;
+        bool _bVisible = true;
 
         Vect2 _posStart, _posEnd;
         bool _bFollowingAPath, _bDeleteAtEndOfPath;
@@ -44,6 +73,7 @@ namespace WordyBlob
 
         public TileMoving(char letter, float fTileSize, bool bInBorder, Vect2 posCentre)
         {
+            _bVisible = true;
             _Letter = letter;
             _fTileSize = fTileSize;
             _fTileStride = _fTileSize * WordyBlobGame._fTileStrideRel;
@@ -52,13 +82,14 @@ namespace WordyBlob
             _posStart = _posEnd = _Pos;
             _iPathFrame = _iMaxPathFrame = 0;
             _bFollowingAPath = _bDeleteAtEndOfPath = false;
-            _Vel = new Vect2(0, 0);
+            _Vel = 0;
             _Image = MainPage._Game?.TileImageForChar(_Letter);
         }
 
         // Animation tile
         public TileMoving(char letter, float fTileSize, Vect2 posStart, Vect2 posEnd, Pos2 posEndInGrid, int iMaxPathFrame, bool bDeleteAtEndOfPath)
         {
+            _bVisible = true;
             _Letter = letter;
             _fTileSize = fTileSize;
             _fTileStride = _fTileSize * WordyBlobGame._fTileStrideRel;
@@ -70,7 +101,7 @@ namespace WordyBlob
             _iMaxPathFrame = iMaxPathFrame;
             _bFollowingAPath = true;
             _bDeleteAtEndOfPath = bDeleteAtEndOfPath;
-            _Vel = new Vect2(0, 0);
+            _Vel = 0;
             _Image = MainPage._Game?.TileImageForChar(_Letter);
         }
 
@@ -99,6 +130,12 @@ namespace WordyBlob
             }
         }
 
+        public bool Visible
+        {
+            get { return _bVisible; }
+            set { _bVisible = value; }
+        }
+
         public Pos2 PosEndInGrid
         {
             get
@@ -109,7 +146,7 @@ namespace WordyBlob
 
         public void Draw(ICanvas canvas)
         {
-            if(_Image != null)
+            if(_Image != null && _bVisible)
                 canvas.DrawImage(_Image, (float)_Pos.X, (float)_Pos.Y, _fTileSize, _fTileSize);
         }
 

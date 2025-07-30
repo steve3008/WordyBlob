@@ -63,6 +63,12 @@
             return new Vect2(_Rnd.NextDouble() * side - s2,
                              _Rnd.NextDouble() * side - s2);
         }
+        public Vect2 RandomVariationAroundThisPoint(double range)
+        {
+            double r2 = range * 0.5;
+            return new Vect2(X - r2 + _Rnd.NextDouble() * range,
+                             Y - r2 + _Rnd.NextDouble() * range);
+        }
 
         public static implicit operator PointF(Vect2 v)
         {

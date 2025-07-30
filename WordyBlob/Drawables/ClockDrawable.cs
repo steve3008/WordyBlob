@@ -11,6 +11,7 @@ namespace WordyBlob.Drawables;
 public class ClockDrawable : IDrawable
 {
     int _iTheTime = 0;
+    bool _bShowLowTimeWarning = false;
     int _iLowTimeWarningTime = 6;
     const int _iClockMaxTime = 60;
     Vect2 _vClockFullSize = new Vect2(152.0, 152.0);
@@ -29,7 +30,7 @@ public class ClockDrawable : IDrawable
         int angle = (630 - _iTheTime * 360 / _iClockMaxTime) % 360;
         Vect2 vHandStart = _vClockCentreFullSize * vScale;
         Vect2 vHandEnd = vHandStart + ((_fHandLenFullSize * DrawFuncs._trigtable[angle]) * vScale);
-        if (_iTheTime <= _iLowTimeWarningTime && _iTheTime % 2 == 0)
+        if (_bShowLowTimeWarning && _iTheTime <= _iLowTimeWarningTime && _iTheTime % 2 == 0)
         {
             canvas.StrokeSize = 3.0f;// (float)vScale.X / 30.0f;
             canvas.StrokeColor = Colors.Red;

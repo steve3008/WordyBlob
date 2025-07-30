@@ -8,9 +8,9 @@ public partial class MainPage : ContentPage
     public static WordyBlobGame? _Game = null;
 
     WordyBlobDrawable _WordyBlobDrawable;
-    ScoreDrawable _topScoreDrawable, _scoreDrawable, _digitalTimeDrawable;
+    ScoreDrawable _scoreDrawable, _topScoreDrawable;
     ClockDrawable _clockDrawable;
-    bool _bUpdateTopScore = true, _bUpdateScore = true, _bUpdateDigitalTime = true, _bUpdateClock = true;
+    bool _bUpdateScore = true, _bUpdateTopScore = true, _bUpdateClock = true;
     private IDispatcherTimer? _timerMain;
     public static bool _bShowDebugInfo = false;
     public const int _iFramesPerSecond = 25;
@@ -41,12 +41,10 @@ public partial class MainPage : ContentPage
         };
 
         // Setup the scoreboard
-        _topScoreDrawable = new ScoreDrawable(4);
-        TopScoreGraphicsView.Drawable = _topScoreDrawable;
         _scoreDrawable = new ScoreDrawable(4);
         ScoreGraphicsView.Drawable = _scoreDrawable;
-        _digitalTimeDrawable = new ScoreDrawable(2);
-        TimeGraphicsView.Drawable = _digitalTimeDrawable;
+        _topScoreDrawable = new ScoreDrawable(4);
+        TopScoreGraphicsView.Drawable = _topScoreDrawable;
         _clockDrawable = new ClockDrawable();
         ClockGraphicsView.Drawable = _clockDrawable;
 
@@ -73,22 +71,16 @@ public partial class MainPage : ContentPage
         WordyBlobGraphicsView.Invalidate();
 
         // Update the scoreboard
-        if (_bUpdateTopScore)
-        {
-            _topScoreDrawable.TheValue = _WordyBlobDrawable.TopScore;
-            _bUpdateTopScore = false;
-        }
         if (_bUpdateScore)
         {
             int score = _WordyBlobDrawable.Score;
             _scoreDrawable.TheValue = score;
             _bUpdateScore = false;
         }
-
-        if (_bUpdateDigitalTime)
+        if (_bUpdateTopScore)
         {
-            _digitalTimeDrawable.TheValue = _WordyBlobDrawable.TheTime;
-            _bUpdateDigitalTime = false;
+            _topScoreDrawable.TheValue = _WordyBlobDrawable.TopScore;
+            _bUpdateTopScore = false;
         }
         if (_bUpdateClock)
         {
@@ -97,12 +89,10 @@ public partial class MainPage : ContentPage
             ClockGraphicsView.Invalidate();
         }
 
-        if (_topScoreDrawable.IncrementAnimationFrame())
-            TopScoreGraphicsView.Invalidate();
         if (_scoreDrawable.IncrementAnimationFrame())
             ScoreGraphicsView.Invalidate();
-        if (_digitalTimeDrawable.IncrementAnimationFrame())
-            TimeGraphicsView.Invalidate();
+        if (_topScoreDrawable.IncrementAnimationFrame())
+            TopScoreGraphicsView.Invalidate();
 
         // Kill game
         if (_bKillGameNextFrame && Application.Current != null)
@@ -116,18 +106,13 @@ public partial class MainPage : ContentPage
             WordyBlobGame._iFrameTime = (int)(t2 - t1);
         }
     }
-
-    public void UpdateTopScoreNextFrame()
-    {
-        _bUpdateTopScore = true;
-    }
     public void UpdateTheScoreNextFrame()
     {
         _bUpdateScore = true;
     }
-    public void UpdateTheDigitalTimeNextFrame()
+    public void UpdateTopScoreNextFrame()
     {
-        _bUpdateDigitalTime = true;
+        _bUpdateTopScore = true;
     }
     public void UpdateTheClockNextFrame()
     {
@@ -160,56 +145,51 @@ public partial class MainPage : ContentPage
 
         _WordyBlobDrawable.OnTapped(pos);
     }
-
-
-
     private void OnTouchClock(object sender, TappedEventArgs e)
     {
-        _WordyBlobDrawable.GameIsRunning = false;
-        GamePaused();
         _WordyBlobDrawable.OnTouchClock();
-    }
-
-    private void OnTouchParticlesRemaining(object sender, TappedEventArgs e)
-    {
-    }
-
-    private void OnTouchTopScore(object? sender, TappedEventArgs e)
-    {
-
     }
 
     private void OnTouchCurrentScore(object sender, TappedEventArgs e)
     {
     }
-    private void OnTouchTargetScore(object sender, TappedEventArgs e)
+    private void OnTouchTopScore(object? sender, TappedEventArgs e)
     {
+
+    }
+
+    private void OnTouchButtonHint(object? sender, TappedEventArgs e)
+    {
+        if (_WordyBlobDrawable.OnTouchHintButton())
+            ScoreBoardButton_Hint.Source = "scbd_button_hint_down.png";
     }
 
     private void OnTouchScoreboard(object sender, TappedEventArgs e)
     {
+        if (MainPage._Game != null)
+            MainPage._Game.ShowOrHideHelp();
+
         Point? pos = e.GetPosition(ScoreboardGrid);
         if (pos == null)
             return;
-        if (pos.Value.X / ScoreboardGrid.Width < 0.6852)
-        {
-            //IncrementHelpStage();
-        }
-        else
-        {
-            //if (_iHelpStage > 0)
-            //    return;
-            _WordyBlobDrawable.GameIsRunning = false;
-            GamePaused();
-            _WordyBlobDrawable.OnTouchClock();
-        }
+        int x = (int)(pos.Value.X * 1080.0 / ScoreboardGrid.Width);
+    }
+
+    private void OnTouchNextLevelGrid(object sender, TappedEventArgs e)
+    {
+        NextLevelGrid.IsVisible = false;
+        _WordyBlobDrawable.StartGame();
+        _WordyBlobDrawable.GameIsRunning = true;
+    }
+
+    public void EnableHintButton(bool bEnable)
+    {
+        ScoreBoardButton_Hint.Source = bEnable ? "scbd_button_hint_up.png" : "scbd_button_hint_grey.png";
     }
 
     public void GameOver()
     {
-    }
-
-    public void GamePaused()
-    {
+        NextLevelGrid.IsVisible = true;
+        _WordyBlobDrawable.GameIsRunning = false;
     }
 }

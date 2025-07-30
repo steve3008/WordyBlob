@@ -56,7 +56,12 @@ public class WordyBlobDrawable : IDrawable
                 MainPage._Game.IsRunning = value;
         }
     }
-
+    public void StartGame()
+    {
+        if (MainPage._Game == null)
+            return;
+        MainPage._Game.StartGame();
+    }
     public void OnTapped(Point? pntTouched)
     {
         if (MainPage._Game == null || pntTouched == null)
@@ -83,6 +88,13 @@ public class WordyBlobDrawable : IDrawable
         if (MainPage._Game == null || pntTouched == null)
             return;
         MainPage._Game.OnTouchUp((PointF)pntTouched);
+    }
+
+    public bool OnTouchHintButton()
+    {
+        if (MainPage._Game == null)
+            return false;
+        return MainPage._Game.OnTouchHintButton();
     }
 
     public void OnTouchClock()
